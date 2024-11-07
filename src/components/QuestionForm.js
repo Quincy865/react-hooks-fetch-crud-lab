@@ -19,7 +19,37 @@ function QuestionForm(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    console.log(formData);
+    const newQuestion = {
+      prompt: formData.prompt,
+      answers: [formData.answer1, formData.answer2, formData.answer3, formData.answer4],
+      correctIndex: formData.correctIndex,
+    };
+
+    // Send POST request to add the new question to the server
+    fetch('http://localhost:4000/questions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newQuestion),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Pass the new question back to the parent component
+        props.onQuestionAdded(data);
+        // Reset the form after submission
+        setFormData({
+          prompt: "",
+          answer1: "",
+          answer2: "",
+          answer3: "",
+          answer4: "",
+          correctIndex: 0,
+        });
+      })
+      .catch((error) => {
+        console.error("Error adding new question:", error);
+      });
   }
 
   return (
